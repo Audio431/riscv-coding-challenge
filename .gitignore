@@ -1,0 +1,44 @@
+# ---- Verilator ----
+obj_dir/
+*.vlt.log
+verilator.log
+*.d
+*.o
+*.a
+
+# ---- Questa / ModelSim ----
+work/
+work-*/
+transcript
+vsim.wlf
+*.wlf
+*.vstf
+wlft*
+*.ucdb
+modelsim.ini
+vish_stacktrace.vstf
+
+# ---- Simulation output ----
+*.vcd
+*.fst
+*.fst.hier
+*.log
+!.gitkeep
+
+# ---- LLVM / C++ build ----
+build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+*.so
+*.dylib
+*.bc
+*.ll.tmp
+
+# ---- Editor / OS ----
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
