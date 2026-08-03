@@ -97,8 +97,6 @@ module tb_cam;
         #1;
         check_search(32'hAAAA_AAAA, 1'b0, "miss when wr_en was low");
 
-
-
         // overwriting an entry retires the old value
         write_entry(2'd2, 32'h5555_5555);
         check_search(32'h0000_ABCD, 1'b0, "miss on overwritten value");
