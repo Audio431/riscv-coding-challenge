@@ -18,8 +18,9 @@ search compares all four entries in parallel and answers in the same cycle.
 
 ## Implementation
 
-Each entry carries a valid bit. Reset clears the valid bits only, so an entry
-never written since reset is ignored by the search regardless of what it holds.
+Each entry carries a valid bit in `entry_valid`. Reset clears `entry_valid`
+only, so an entry never written since reset is ignored by the search regardless
+of what it holds.
 
 The search is a comparison per entry, each gated by that entry's valid bit, OR
 reduced into `match`.
@@ -70,7 +71,7 @@ would be an external dependency.
 ## Limitations
 
 The testbench proves the cases listed above and nothing beyond them. The
-structure extends to greater depth by widening `wr_addr` and the valid vector,
+structure extends to greater depth by widening `wr_addr` and `entry_valid`,
 at the cost of one comparator per entry and a wider OR tree; at large depths the
 reduction becomes the timing-critical path and would need pipelining, which is
 outside the scope of this exercise. Nothing here has been synthesised, so no
@@ -82,7 +83,8 @@ not appear here.
 
 The lint gate follows Sargantana's `veri_lint_strict.sh`: `verilator
 --lint-only`, failing on any diagnostic. The simulation warning flags follow
-CVA6's verilate command.
+CVA6's verilate command. `make lint` covers the RTL; the testbench is checked
+with the same flags when the simulation is built.
 
 ## Running
 
