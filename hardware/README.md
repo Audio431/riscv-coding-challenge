@@ -74,7 +74,9 @@ structure extends to greater depth by widening `wr_addr` and the valid vector,
 at the cost of one comparator per entry and a wider OR tree; at large depths the
 reduction becomes the timing-critical path and would need pipelining, which is
 outside the scope of this exercise. Nothing here has been synthesised, so no
-area or frequency claim is made.
+area or frequency claim is made. The results above come from Verilator, which is
+two-state; a four-state simulator could expose uninitialised behaviour that does
+not appear here.
 
 ## Tooling
 
@@ -84,10 +86,10 @@ CVA6's verilate command.
 
 ## Running
 
-```
+```bash
 make lint    # lint the RTL
 make run     # build and run the testbench
 make clean   # remove the build directory
 ```
 
-Requires Verilator 5.x. Verified with Verilator 5.050 on macOS.
+Requires Verilator 5.x for `--binary`. Verified with 5.050 on macOS.
