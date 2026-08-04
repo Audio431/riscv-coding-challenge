@@ -21,7 +21,7 @@ search compares all four entries in parallel and answers in the same cycle.
 Each entry carries a valid bit in `entry_valid`. Reset clears `entry_valid`
 only, so an entry never written since reset is ignored by the search regardless
 of what it holds.
- 
+
 The search is a comparison per entry, each gated by that entry's valid bit, OR
 reduced into `match`.
 
