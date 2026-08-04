@@ -12,6 +12,8 @@ struct CountMemOps : PassInfoMixin<CountMemOps> {
     errs() << "visiting " << F.getName() << "\n";
     return PreservedAnalyses::all();
   }
+
+  static bool isRequired() { return true; }
 };
 
 } // namespace
