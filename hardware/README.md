@@ -21,27 +21,31 @@ search compares all four entries in parallel and answers in the same cycle.
 Each entry carries a valid bit in `entry_valid`. Reset clears `entry_valid`
 only, so an entry never written since reset is ignored by the search regardless
 of what it holds.
-
+ 
 The search is a comparison per entry, each gated by that entry's valid bit, OR
 reduced into `match`.
 
 ## Design choices
 
-Binary CAM rather than ternary. A TCAM carries a mask per entry so that selected
-bits are ignored during the compare, which is what prefix matching needs. The
+The problem statement fixes the depth and the width and leaves the rest open, so
+three questions had to be answered here: what counts as a match, what the module
+reports, and how the comparison is built.
+
+**Binary CAM rather than ternary.** A TCAM carries a mask per entry and ignores
+the masked bits during the compare, which is what prefix matching needs. The
 problem statement asks only for match and miss on a full 32-bit value, so the
 mask storage and the wider compare would be unused logic here.
 
-`match` as a single bit rather than a one-hot vector or an encoded index.
-One-hot reports which entries matched, and an encoder reduces that to a
-position; callers need those when the entry index selects associated data. This
-module is asked for match/miss, so the OR reduction is the whole answer, and a
+**`match` as a single bit rather than a one-hot vector or an encoded index.**
+One-hot reports which entries matched; an encoder reduces that to a position.
+Callers need either when the entry index selects associated data, but this
+module is asked for match and miss, so the OR reduction is the whole answer. A
 caller that needs positions would be a different interface.
 
-Four parallel comparators. A RAM-based lookup stores the mapping in a memory and
-indexes it, which amortises well once the entry count is large. At a depth of
-four it buys nothing: each comparator is a handful of gates, and the memory
-would be an external dependency.
+**Four parallel comparators rather than a RAM-based lookup.** The alternative
+stores the mapping in a memory and indexes it, which amortises well once the
+entry count is large. At a depth of four it buys nothing: each comparator is a
+handful of gates, and the memory would be an external dependency.
 
 ## Assumptions
 
