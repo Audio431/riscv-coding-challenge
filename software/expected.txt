@@ -1,0 +1,9 @@
+pure_add: 2 loads, 2 stores, 0 mem intrinsics
+read_only: 4 loads, 1 stores, 0 mem intrinsics
+write_only: 4 loads, 4 stores, 0 mem intrinsics
+sum: 8 loads, 6 stores, 0 mem intrinsics
+scale: 9 loads, 6 stores, 0 mem intrinsics
+copy_buf: 4 loads, 3 stores, 0 mem intrinsics
+clear_buf: 3 loads, 2 stores, 0 mem intrinsics
+copy_buf_builtin: 2 loads, 2 stores, 1 mem intrinsics
+main: 0 loads, 1 stores, 1 mem intrinsics

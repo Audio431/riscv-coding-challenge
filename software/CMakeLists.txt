@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
-project(count-mem-ops LANGUAGES CXX)
+project(count-mem-ops LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Using LLVM ${LLVM_PACKAGE_VERSION}")
@@ -39,6 +40,17 @@ add_custom_target(run
   DEPENDS CountMemOps ${TEST_SOURCE}.ll
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Running count-mem-ops on ${TEST_SOURCE}.ll"
+  VERBATIM
+)
+
+# `check` fails loudly if the counts ever drift from expected.txt.
+add_custom_target(check
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/check.sh
+          ${LLVM_TOOLS_BINARY_DIR}/opt $<TARGET_FILE:CountMemOps>
+          ${TEST_SOURCE}.ll ${CMAKE_CURRENT_SOURCE_DIR}/expected.txt
+  DEPENDS CountMemOps ${TEST_SOURCE}.ll
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Checking count-mem-ops output against expected.txt"
   VERBATIM
 )
 

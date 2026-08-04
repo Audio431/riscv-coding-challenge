@@ -12,7 +12,7 @@ namespace
   {
     PreservedAnalyses run(Function &F, FunctionAnalysisManager &)
     {
-      unsigned Loads = 0, Stores = 0;
+      unsigned Loads = 0, Stores = 0, MemIntrinsics = 0;
       for (BasicBlock &BB : F)
         for (Instruction &I : BB)
         {
@@ -20,9 +20,11 @@ namespace
             ++Loads;
           else if (isa<StoreInst>(I))
             ++Stores;
+          else if (isa<MemIntrinsic>(I))
+            ++MemIntrinsics;
         }
       errs() << F.getName() << ": " << Loads << " loads, " << Stores
-             << " stores\n";
+             << " stores, " << MemIntrinsics << " mem intrinsics\n";
       return PreservedAnalyses::all();
     }
     static bool isRequired() { return true; }
