@@ -20,15 +20,32 @@ if(APPLE)
   target_link_options(CountMemOps PRIVATE -undefined dynamic_lookup)
 endif()
 
-add_custom_target(run
+# opt reads IR, not C, so clang lowers test.c first. The .ll lives in build/
+# and is only regenerated when test.c changes.
+add_custom_command(
+  OUTPUT ${TEST_SOURCE}.ll
   COMMAND ${LLVM_TOOLS_BINARY_DIR}/clang -O0 -S -emit-llvm
           ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_SOURCE}.c -o ${TEST_SOURCE}.ll
+  MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_SOURCE}.c
+  COMMENT "Generating ${TEST_SOURCE}.ll from ${TEST_SOURCE}.c"
+  VERBATIM
+)
+
+# Load the plugin into opt and run the pass over the generated IR.
+add_custom_target(run
   COMMAND ${LLVM_TOOLS_BINARY_DIR}/opt
           -load-pass-plugin=$<TARGET_FILE:CountMemOps>
           -passes=count-mem-ops -disable-output ${TEST_SOURCE}.ll
-  BYPRODUCTS ${TEST_SOURCE}.ll
-  DEPENDS CountMemOps
+  DEPENDS CountMemOps ${TEST_SOURCE}.ll
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Running count-mem-ops on ${TEST_SOURCE}.c"
+  COMMENT "Running count-mem-ops on ${TEST_SOURCE}.ll"
+  VERBATIM
+)
+
+# The built-in `clean` already removes build artifacts but keeps the cache;
+# `distclean` wipes build/ entirely. Reconfigure with `cmake -B build` after.
+add_custom_target(distclean
+  COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}
+  COMMENT "Removing ${CMAKE_BINARY_DIR}"
   VERBATIM
 )
