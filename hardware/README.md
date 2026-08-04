@@ -23,7 +23,11 @@ only, so an entry never written since reset is ignored by the search regardless
 of what it holds.
 
 The search is a comparison per entry, each gated by that entry's valid bit, OR
-reduced into `match`.
+reduced into `match`:
+
+```text
+match = OR over i of ( entry_valid[i] AND (entries[i] == search_key) )
+```
 
 ## Design choices
 
