@@ -5,27 +5,43 @@
 
 using namespace llvm;
 
-namespace {
+namespace
+{
 
-struct CountMemOps : PassInfoMixin<CountMemOps> {
-  PreservedAnalyses run(Function &F, FunctionAnalysisManager &) {
-    errs() << "visiting " << F.getName() << "\n";
-    return PreservedAnalyses::all();
-  }
-
-  static bool isRequired() { return true; }
-};
+  struct CountMemOps : PassInfoMixin<CountMemOps>
+  {
+    PreservedAnalyses run(Function &F, FunctionAnalysisManager &)
+    {
+      unsigned Loads = 0, Stores = 0;
+      for (BasicBlock &BB : F)
+        for (Instruction &I : BB)
+        {
+          if (isa<LoadInst>(I))
+            ++Loads;
+          else if (isa<StoreInst>(I))
+            ++Stores;
+        }
+      errs() << F.getName() << ": " << Loads << " loads, " << Stores
+             << " stores\n";
+      return PreservedAnalyses::all();
+    }
+    static bool isRequired() { return true; }
+  };
 
 } // namespace
 
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
-llvmGetPassPluginInfo() {
+llvmGetPassPluginInfo()
+{
   return {LLVM_PLUGIN_API_VERSION, "count-mem-ops", LLVM_VERSION_STRING,
-          [](PassBuilder &PB) {
+          [](PassBuilder &PB)
+          {
             PB.registerPipelineParsingCallback(
                 [](StringRef Name, FunctionPassManager &FPM,
-                   ArrayRef<PassBuilder::PipelineElement>) {
-                  if (Name == "count-mem-ops") {
+                   ArrayRef<PassBuilder::PipelineElement>)
+                {
+                  if (Name == "count-mem-ops")
+                  {
                     FPM.addPass(CountMemOps());
                     return true;
                   }
